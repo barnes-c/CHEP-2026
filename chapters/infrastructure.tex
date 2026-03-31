@@ -1,0 +1,68 @@
+\section{Current Infrastructure Landscape}
+\label{infra}
+
+CERN operates its own cloud infrastructure based on OpenStack~\cite{dupuis2025,savchenko2024preparing}. Beyond OpenStack, several in-house services manage the machines state, trust, and network configuration~\cite{martelli2018}. Foreman serves as the central External Node Classification (ENC) system for Puppet, maintaining hostgroup assignments, environments, and metadata consumed during catalog compilation.
+
+Production systems are typically provisioned through an internal tool that encapsulates the above mentioned in-house services, Foreman and OpenStack to create cloud resource. Once these are created a cloud-init script executes to run Puppet for bootstrapping and lifecycle management~\cite{rubavicius2018}. Once the Puppet agent performs its first catalog request and the host transitions into ongoing configuration management.
+
+\subsection{Pain Points}
+\label{sec:painpoints}
+
+The primary friction does not originate from deficiencies within individual tools but from the interfaces between them. State is distributed across Foreman, OpenStack, alert management, state management, and CERN's network database, with parts duplicated or derived independently. As changes propagate through different mechanisms, inconsistencies can arise to the point where manual correction is required. Figure~\ref{fig:state-boundaries} illustrates the typical drift boundaries between infrastructure layers.
+
+\begin{figure}[tbp]
+  \label{fig:state-boundaries}
+  \centering
+  \begin{tikzpicture}[
+      font=\small,
+      box/.style={
+          draw, rounded corners, align=center,
+          minimum width=9.2cm, minimum height=1.05cm, inner sep=3pt
+        },
+      drift/.style={-Latex, thick},
+      note/.style={align=left, font=\footnotesize},
+      node distance=0.55cm
+    ]
+
+    % --- Layers ---
+    \node[box] (svc) {Service / Application layer\\(\footnotesize team-specific procedures, overrides)};
+    \node[box, below=of svc] (cm) {Configuration management layer\\(\footnotesize Puppet + Foreman)};
+    \node[box, below=of cm] (cloud) {Virtual infrastructure layer\\(\footnotesize OpenStack resources, metadata, lifecycle)};
+    \node[box, below=of cloud] (phys) {Physical infrastructure layer\\(\footnotesize hardware inventory, network registration, lifecycle records)};
+
+    % --- Explicit boundary anchors (invisible points) ---
+    \coordinate (b1) at ($(svc.south)!0.5!(cm.north)$);
+    \coordinate (b2) at ($(cm.south)!0.5!(cloud.north)$);
+    \coordinate (b3) at ($(cloud.south)!0.5!(phys.north)$);
+
+    % --- Vertical arrows indicating boundaries ---
+    \draw[drift] (svc.south) -- (cm.north);
+    \draw[drift] (cm.south) -- (cloud.north);
+    \draw[drift] (cloud.south) -- (phys.north);
+
+    % --- Right-side boundary annotations (anchored to boundaries) ---
+    \node[problemnote, right=5cm of b1] (d1)
+    {boundary drift:\\manual steps,\\non-uniform idempotency};
+    \draw[problemarrow] (d1.west) -- (b1);
+
+    \node[problemnote, right=5cm of b2] (d2)
+    {boundary drift:\\classification vs\\resource state};
+    \draw[problemarrow] (d2.west) -- (b2);
+
+    \node[problemnote, right=5cm of b3] (d3)
+    {boundary drift:\\registration and\\lifecycle coordination};
+    \draw[problemarrow] (d3.west) -- (b3);
+
+    % --- Left-side annotation: multiple stores of state ---
+    \node[note, left=0.6cm of cm.west] (sot)
+    {multiple\\stores of\\state};
+    \draw[drift] (sot.east) -- (cm.west);
+
+  \end{tikzpicture}
+  \caption{Layered view of the current infrastructure stack.}
+\end{figure}
+
+
+Key limitations include: overlapping state representations across systems with delayed convergence; asynchronous change propagation with weak end-to-end guarantees; manual steps remaining in provisioning for registration, hardware tracking, and exceptional workflows; and limited end-to-end observability with slow feedback loops. The \texttt{ai-bs} tool itself follows a fire-and-forget model, performing no pre-flight checks on permissions or quota and failing silently on errors.
+
+The absence of a single declarative model spanning virtual resources, service-level configuration, and supporting registrations limits end-to-end automation and makes convergence dependent on cross-system coordination. These constraints motivate the exploration of a Terraform/OpenTofu-based framework to reduce boundary drift, improve idempotency across layers, and increase traceability of change.
