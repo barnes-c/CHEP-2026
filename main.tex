@@ -48,15 +48,14 @@ Server management procedures exist, but maintaining service operation documentat
 In recent years, IaC has emerged as a critical model for consolidating infrastructure development, deployment, and automation~\cite{morris2025infrastructure}. Terraform and its community-driven fork, OpenTofu, are prominent IaC solutions that offer substantial potential to unify infrastructure provisioning and configuration in a reproducible and scalable manner~\cite{holkuziev2025infrastructure}.
 
 The core motivation of this work is/was? to design and implement an IaC-based framework, that integrates with CERN's existing infrastructure management ecosystem. This framework should provide a unified, automated, and traceable method for managing resources distributed across various cloud regions. A successful integration is expected to not only reduce operational complexity and maintenance effort but also significantly improve automation, enhance reproducibility, and ease use cases such as Business Continuity / Disaster Recovery (BC/DR) and cross-environment replication. This framework will serve as a foundational step towards a more unified and efficient infrastructure management strategy at CERN.
-\section{Current Infrastructure Landscape}
-\label{infra}
 
-CERN operates its own cloud infrastructure based on OpenStack~\cite{dupuis2025,savchenko2024preparing}. Beyond OpenStack, several in-house services manage the machines state, trust, and network configuration~\cite{martelli2018}. Foreman serves as the central External Node Classification (ENC) system for Puppet, maintaining hostgroup assignments, environments, and metadata consumed during catalog compilation.
+\section{Current Infrastructure Landscape}\label{infra}
+
+CERN operates its own cloud infrastructure based on OpenStack~\cite{savchenko2024preparing}. Beyond OpenStack, several in-house services manage the machines state, trust, and network configuration~\cite{martelli2018}. Foreman serves as the central External Node Classification (ENC) system for Puppet, maintaining hostgroup assignments, environments, and metadata consumed during catalog compilation.
 
 Production systems are typically provisioned through an internal tool that encapsulates the above mentioned in-house services, Foreman and OpenStack to create cloud resource. Once these are created a cloud-init script executes to run Puppet for bootstrapping and lifecycle management~\cite{rubavicius2018}. Once the Puppet agent performs its first catalog request and the host transitions into ongoing configuration management.
 
-\subsection{Pain Points}
-\label{sec:painpoints}
+\subsection{Pain Points}\label{sec:painpoints}
 
 The primary friction does not originate from deficiencies within individual tools but from the interfaces between them. State is distributed across Foreman, OpenStack, alert management, state management, and CERN's network database, with parts duplicated or derived independently. As changes propagate through different mechanisms, inconsistencies can arise to the point where manual correction is required. Figure~\ref{fig:state-boundaries} illustrates the typical drift boundaries between infrastructure layers.
 
