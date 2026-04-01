@@ -1,12 +1,10 @@
-\section{Current Infrastructure Landscape}
-\label{infra}
+\section{Current Infrastructure Landscape}\label{infra}
 
 CERN operates its own cloud infrastructure based on OpenStack~\cite{dupuis2025,savchenko2024preparing}. Beyond OpenStack, several in-house services manage the machines state, trust, and network configuration~\cite{martelli2018}. Foreman serves as the central External Node Classification (ENC) system for Puppet, maintaining hostgroup assignments, environments, and metadata consumed during catalog compilation.
 
-Production systems are typically provisioned through an internal tool that encapsulates the above mentioned in-house services, Foreman and OpenStack to create cloud resource. Once these are created a cloud-init script executes to run Puppet for bootstrapping and lifecycle management~\cite{rubavicius2018}. Once the Puppet agent performs its first catalog request and the host transitions into ongoing configuration management.
+Production systems are typically provisioned through an internal tool that encapsulates the above mentioned services to create resource. Once these are created a cloud-init script runs to perform the bootstrapping for Puppet which will handle the lifecycle management of a machine~\cite{rubavicius2018}. Once the Puppet agent performs its first catalog request and the host transitions into ongoing configuration management.
 
-\subsection{Pain Points}
-\label{sec:painpoints}
+\subsection{Pain Points}\label{sec:painpoints}
 
 The primary friction does not originate from deficiencies within individual tools but from the interfaces between them. State is distributed across Foreman, OpenStack, alert management, state management, and CERN's network database, with parts duplicated or derived independently. As changes propagate through different mechanisms, inconsistencies can arise to the point where manual correction is required. Figure~\ref{fig:state-boundaries} illustrates the typical drift boundaries between infrastructure layers.
 
@@ -63,6 +61,8 @@ The primary friction does not originate from deficiencies within individual tool
 \end{figure}
 
 
-Key limitations include: overlapping state representations across systems with delayed convergence; asynchronous change propagation with weak end-to-end guarantees; manual steps remaining in provisioning for registration, hardware tracking, and exceptional workflows; and limited end-to-end observability with slow feedback loops. The \texttt{ai-bs} tool itself follows a fire-and-forget model, performing no pre-flight checks on permissions or quota and failing silently on errors.
+
+Key limitations include: overlapping state representations across systems with delayed convergence; asynchronous change propagation with weak end-to-end guarantees; manual steps remaining in provisioning for registration, hardware tracking, and exceptional workflows; and limited end-to-end observability with slow feedback loops. The internal tool, which is commonly used to deploy infrastructure, itself follows a fire-and-forget model, performing no pre-flight checks on permissions or quota and failing silently on errors.
 
 The absence of a single declarative model spanning virtual resources, service-level configuration, and supporting registrations limits end-to-end automation and makes convergence dependent on cross-system coordination. These constraints motivate the exploration of a Terraform/OpenTofu-based framework to reduce boundary drift, improve idempotency across layers, and increase traceability of change.
+

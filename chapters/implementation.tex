@@ -1,0 +1,19 @@
+\section{Implementation}\label{implementation}
+
+\begin{listing}[ht]
+    \begin{minted}[fontsize=\small]{HCL}
+        module "my_hostgroup" {
+          source  = "gitlab.cern.ch/terraform/terraform-cern-puppet-hostgroup/openstack"
+          version = "1.0.0"
+        
+          foreman_hostgroup = "playground"
+        
+          instance_name_prefix = "service-x"
+        
+          landb_mainuser    = "username-or-group"
+          landb_responsible = "username-or-group"
+        }
+    \end{minted}
+    \caption{Minimal end-user instantiation of the module.}
+    \label{lst:hostgroup}
+\end{listing}

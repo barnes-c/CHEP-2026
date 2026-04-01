@@ -1,10 +1,36 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%% Packages / Definitions %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 \documentclass{webofc}
-\usepackage[varg]{txfonts}   % Web of Conferences font
+\PassOptionsToPackage{}{xcolor}
+\usepackage{xcolor}
+\usepackage[varg]{txfonts}
 \RequirePackage{orcidlink}
 \usepackage{tikz}
-\usetikzlibrary{calc, positioning, arrows.meta}%
+\usetikzlibrary{calc, positioning, arrows.meta, fit}
+\definecolor{listingbg}{RGB}{245,245,245}
+\definecolor{user}{RGB}{79,129,189}
+\usepackage[newfloat]{minted}
+
+\setminted{
+    bgcolor=listingbg,
+    fontsize=\footnotesize,
+    fontfamily=tt,
+    breaklines=true,
+    breakanywhere=false,
+    frame=single,
+    framesep=6pt,
+    rulecolor=\color{user},
+    linenos=true,
+    firstnumber=1,
+    numbersep=5pt,
+    stepnumber=2,
+    tabsize=2,
+    obeytabs=true,
+    showspaces=false,
+    showtabs=false,
+    autogobble=true,
+    escapeinside=\%*\*),
+}
 
 \definecolor{problemred}{RGB}{140, 62, 84}   % muted red, print-safe
 
@@ -32,6 +58,10 @@
 
 \input{chapters/introduction}
 \input{chapters/infrastructure}
+\input{chapters/design}
+\input{chapters/implementation}
+\input{chapters/evaluation}
+\input{chapters/conclusion}
 
 \input{references}
 
