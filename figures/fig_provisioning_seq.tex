@@ -1,0 +1,21 @@
+\begin{tikzpicture}[
+  font=\footnotesize,
+  block/.style={draw, rounded corners, align=center, minimum height=0.8cm, minimum width=1.4cm},
+  arr/.style={-Latex, thick},
+  lbl/.style={above=12pt, font=\scriptsize, align=center}
+]
+
+\node[block] (op) {Operator};
+\node[block, right=0.9cm of op] (git) {Git};
+\node[block, right=0.9cm of git] (ci) {CI/CD};
+\node[block, right=0.9cm of ci] (tf) {Terraform};
+\node[block, right=0.7cm of tf] (infra) {OpenStack +\\CERN services};
+\node[block, right=0.7cm of infra] (puppet) {Puppet};
+
+\draw[arr] (op) -- node[lbl]{commit} (git);
+\draw[arr] (git) -- node[lbl]{trigger} (ci);
+\draw[arr] (ci) -- node[lbl]{plan + apply} (tf);
+\draw[arr] (tf) -- node[lbl]{provision +\\register} (infra);
+\draw[arr, dashed] (infra) -- node[lbl]{bootstrap +\\handover} (puppet);
+
+\end{tikzpicture}

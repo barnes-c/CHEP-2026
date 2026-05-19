@@ -9,54 +9,7 @@ The pain points within this landscape do not originate from deficiencies within 
 \begin{figure}[tbp]
   \label{fig:state-boundaries}
   \centering
-    \scalebox{0.88}{
-
-  \begin{tikzpicture}[
-      font=\small,
-      box/.style={
-          draw, rounded corners, align=center,
-          minimum width=9.2cm, minimum height=1.05cm, inner sep=3pt
-        },
-      drift/.style={-Latex, thick},
-      note/.style={align=left, font=\footnotesize},
-      node distance=0.55cm
-    ]
-
-    % --- Layers ---
-    \node[box] (svc) {Service / Application layer\\(\footnotesize team-specific procedures, overrides)};
-    \node[box, below=of svc] (cm) {Configuration management layer\\(\footnotesize Puppet + Foreman)};
-    \node[box, below=of cm] (cloud) {Virtual infrastructure layer\\(\footnotesize OpenStack resources, metadata, lifecycle)};
-    \node[box, below=of cloud] (phys) {Physical infrastructure layer\\(\footnotesize hardware inventory, network registration, lifecycle records)};
-
-    % --- Explicit boundary anchors (invisible points) ---
-    \coordinate (b1) at ($(svc.south)!0.5!(cm.north)$);
-    \coordinate (b2) at ($(cm.south)!0.5!(cloud.north)$);
-    \coordinate (b3) at ($(cloud.south)!0.5!(phys.north)$);
-
-    % --- Vertical arrows indicating boundaries ---
-    \draw[drift] (svc.south) -- (cm.north);
-    \draw[drift] (cm.south) -- (cloud.north);
-    \draw[drift] (cloud.south) -- (phys.north);
-
-    % --- Right-side boundary annotations (anchored to boundaries) ---
-    \node[problemnote, right=5cm of b1] (d1)
-    {boundary drift:\\manual steps,\\non-uniform idempotency};
-    \draw[problemarrow] (d1.west) -- (b1);
-
-    \node[problemnote, right=5cm of b2] (d2)
-    {boundary drift:\\classification vs\\resource state};
-    \draw[problemarrow] (d2.west) -- (b2);
-
-    \node[problemnote, right=5cm of b3] (d3)
-    {boundary drift:\\registration and\\lifecycle coordination};
-    \draw[problemarrow] (d3.west) -- (b3);
-
-    % --- Left-side annotation: multiple stores of state ---
-    \node[note, left=0.6cm of cm.west] (sot)
-    {multiple\\stores of\\state};
-    \draw[drift] (sot.east) -- (cm.west);
-
-  \end{tikzpicture}}
+    \scalebox{0.88}{\input{figures/fig_state_boundaries}}
   \caption{Layered view of the current infrastructure stack.}
 \end{figure}
 

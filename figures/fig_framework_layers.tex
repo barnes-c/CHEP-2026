@@ -1,0 +1,58 @@
+\begin{tikzpicture}[
+    font=\small,
+    box/.style={
+        draw, rounded corners, align=center,
+        minimum width=7.0cm, minimum height=0.95cm, inner sep=3pt
+      },
+    iacbox/.style={
+        draw=user, thick, rounded corners, align=center,
+        minimum width=7.0cm, minimum height=0.95cm, inner sep=3pt,
+        fill=user!10
+      },
+    drift/.style={-Latex, thick},
+    note/.style={align=left, font=\footnotesize},
+    framebox/.style={
+        draw=user, very thick, rounded corners=8pt,
+        inner xsep=10pt, inner ysep=10pt
+      },
+    resolvenote/.style={align=left, font=\footnotesize, text width=2.8cm},
+    resolvearrow/.style={-Latex, thick, draw=user},
+    node distance=0.55cm
+  ]
+
+  \node[box] (svc) {Service / Application layer\\(\footnotesize team-specific procedures, overrides)};
+  \node[box, below=of svc] (cm) {Configuration Management layer\\(\footnotesize Puppet + Foreman)};
+  \node[box, below=of cm] (cloud) {Virtual Infrastructure layer\\(\footnotesize OpenStack resources, metadata, lifecycle)};
+  \node[box, below=of cloud] (phys) {Physical Infrastructure layer\\(\footnotesize hardware inventory, network registration, lifecycle records)};
+
+  \node[framebox, fit=(svc)(cm)(cloud)(phys)] (framework) {};
+
+  \node[iacbox, above=0.6cm of framework.north] (iac) {\textbf{IaC integration layer}\\(\footnotesize Terraform/OpenTofu + CI/CD)};
+
+  \draw[drift, draw=user] (iac.south) -- (framework.north);
+
+  \coordinate (b1) at ($(svc.south)!0.5!(cm.north)$);
+  \coordinate (b2) at ($(cm.south)!0.5!(cloud.north)$);
+  \coordinate (b3) at ($(cloud.south)!0.5!(phys.north)$);
+
+  \draw[drift] (svc.south) -- (cm.north);
+  \draw[drift] (cm.south) -- (cloud.north);
+  \draw[drift] (cloud.south) -- (phys.north);
+
+  \node[resolvenote, right=0.3cm of framework.east |- b1] (d1)
+  {declarative handover:\\bootstrap + classification\\derived from code};
+  \draw[resolvearrow] (d1.west) -- (framework.east |- b1);
+
+  \node[resolvenote, right=0.3cm of framework.east |- b2] (d2)
+  {aligned lifecycle:\\provisioning + classification\\from single definition};
+  \draw[resolvearrow] (d2.west) -- (framework.east |- b2);
+
+  \node[resolvenote, right=0.3cm of framework.east |- b3] (d3)
+  {unified registration:\\custom providers for\\inventory + certificates};
+  \draw[resolvearrow] (d3.west) -- (framework.east |- b3);
+
+  \node[note, left=0.3cm of framework.west |- cm] (sot)
+  {single\\source of\\intent (VCS)};
+  \draw[drift, draw=user] (sot.east) -- (framework.west |- cm);
+
+\end{tikzpicture}

@@ -1,0 +1,18 @@
+\documentclass{article}
+\pagestyle{empty}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{calc, positioning, arrows.meta, fit}
+
+\definecolor{problemred}{RGB}{140, 62, 84}
+
+\tikzset{
+  note/.style={align=left, font=\footnotesize},
+  drift/.style={-Latex, thick},
+  problemnote/.style={note, text=problemred},
+  problemarrow/.style={drift, draw=problemred}
+}
+
+\begin{document}
+\input{fig_state_boundaries}
+\end{document}
