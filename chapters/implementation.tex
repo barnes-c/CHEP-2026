@@ -1,6 +1,6 @@
 \section{Implementation}\label{implementation}
 
-The implementation focuses on exposing a simple declarative interface to end users  while encapsulating provider-specific logic and CERN-specific integrations within  reusable modules. Listing~\ref{lst:hostgroup} shows the minimal input required to  deploy a fully configured and registered host. Infrastructure details such as  provider configuration, bootstrap logic, and integration with supporting services are encapsulated within the module itself.
+The implementation focuses on exposing a simple declarative interface to end users while encapsulating provider-specific logic and CERN-specific integrations within reusable modules. Listing~\ref{lst:hostgroup} shows the minimal input required to  deploy a fully configured and registered host. Infrastructure details such as  provider configuration, bootstrap logic, and integration with supporting services are encapsulated within the module itself.
 
 \begin{listing}[ht]
     \begin{minted}[fontsize=\small]{HCL}
@@ -24,7 +24,7 @@ The implementation focuses on exposing a simple declarative interface to end use
 The provisioning layer is organised around a root module that acts as a composition  layer, assembling the required submodules from declared inputs. The central  abstraction is a \textit{node}, managed by an instances submodule that handles compute attributes, networking, identity material, classification metadata, and  lifecycle registration as a single logical unit. Persistent storage is managed  through a separate volumes submodule, intentionally decoupled to allow independent lifecycle management.
 
 \subsection{Custom Providers}
-Where no suitable provider exists, custom Terraform/OpenTofu providers were developed to wrap CERN's in-house services. These providers expose CERN-specific APIs as declarative Terraform resources, allowing service registrations and metadata updates to be managed through the same plan/apply workflow as infrastructure resources. They are intentionally scoped as integration adapters rather than general-purpose tooling.
+Where no suitable provider exists, custom Terraform/OpenTofu providers were developed to wrap in-house services. These providers expose specific APIs as declarative Terraform resources, allowing service registrations and metadata updates to be managed through the same plan/apply workflow as infrastructure resources.
 
 \subsection{CI/CD Integration}
-Infrastructure changes are executed exclusively through standardised CI/CD pipelines, ensuring consistent validation, controlled execution, and auditability. The pipeline logic is packaged as a reusable catalog component that projects consume with a single include directive. For each merge request, the pipeline executes validation, linting, and a plan operation, attaching the generated plan as a human-readable review artifact. The apply stage is executed only after successful validation and required approvals, preventing any ad-hoc execution paths.
+Infrastructure changes are executed exclusively through standardised CI/CD pipelines, ensuring consistent validation, controlled execution, and auditability. The pipeline logic is packaged as a reusable catalog component that projects consume with a single \texttt{include} directive. For each merge request, the pipeline executes validation, linting, and a plan operation, attaching the generated plan as a human-readable review artifact. The apply stage is executed only after successful validation and required approvals, preventing any ad-hoc execution paths.

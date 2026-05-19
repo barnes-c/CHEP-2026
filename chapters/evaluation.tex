@@ -1,12 +1,13 @@
 \section{Evaluation and Results}\label{evaluation}
 
 \subsection{Methodology}
-The evaluation combines scenario-based testing with qualitative expert feedback. A representative deployment scenario was executed end-to-end to observe provisioning behaviour, integration with existing CERN services, and operational workflows. Results are complemented by feedback from practitioners who deployed real services using the framework. The goal is to assess correctness, consistency, and practical applicability within the constraints of CERN's environment rather than to produce quantitative performance benchmarks.
+The evaluation combines scenario-based testing with qualitative expert feedback. A representative deployment scenario was executed end-to-end to observe provisioning behaviour, integration with existing  services, and operational workflows. Results are complemented by feedback from practitioners who deployed real services using the framework. The goal is to assess correctness, consistency, and practical applicability within the constraints of CERN's environment rather than to produce quantitative performance benchmarks.
 
 \subsection{Results}
 During initial provisioning, infrastructure definitions were applied declaratively, resulting in the automatic creation, registration, and bootstrapping of the target host without manual intervention beyond the initial declaration. Subsequent re-application of the same declarations produced no unintended side effects, confirming idempotent behaviour across the provisioning and registration layers.
 
-To evaluate drift handling, manual changes were introduced outside the framework. Deviations from the declared intent became visible in the subsequent plan execution, giving operators an explicit and auditable view of inconsistencies. Remediation was performed by re-applying the declared state through the standard CI/CD workflow, confirming that the plan/apply cycle is sufficient for controlled drift correction without requiring continuous reconciliation.
+To evaluate drift handling, manual changes were introduced outside the framework. Deviations from the declared intent became visible in the subsequent plan execution, giving operators an explicit and auditable view of inconsistencies. Remediation was performed by re-applying the declared state through the standard CI/CD workflow, confirming that the \texttt{plan/apply}
+ cycle is sufficient for controlled drift correction without requiring continuous reconciliation.
 
 Compared to the existing provisioning approach, the framework reduced the number of manual coordination steps and eliminated ad-hoc execution paths. Plan artifacts attached to merge requests provided reviewers with a clear representation of intended changes, improving confidence during reviews and reducing the need for out-of-band verification.
 

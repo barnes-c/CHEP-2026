@@ -4,7 +4,7 @@ CERN operates its own cloud infrastructure based on OpenStack~\cite{dupuis2025,s
 
 Production systems are typically provisioned through an internal tool that encapsulates the above mentioned services to create resources. Once these are created a cloud-init script runs to perform the bootstrapping for Puppet which will handle the lifecycle management of a machine. Once the Puppet agent performs its first catalog request the host transitions into ongoing CM.
 
-The pain points within this landscape do not originate from deficiencies within individual tools or services, but from the interfaces between them. State is distributed across Foreman, OpenStack, alert management, state management, and CERN's network database, with parts duplicated or derived independently. When changes propagate through different tools, inconsistencies arise to the point where manual correction is needed. Figure~\ref{fig:state-boundaries} shows the drift boundaries between infrastructure layers in the current infrastructure landscape.
+eThe pain points within this landscape do not originate from deficiencies within individual tools or services, but from the interfaces between them. State is distributed across Foreman, OpenStack, alert management, state management, and a network database, with parts duplicated or derived independently. When changes propagate through different tools, inconsistencies arise to the point where manual correction is needed. Figure~\ref{fig:state-boundaries} shows the drift boundaries between infrastructure layers in the current infrastructure landscape.
 
 \begin{figure}[tbp]
   \label{fig:state-boundaries}

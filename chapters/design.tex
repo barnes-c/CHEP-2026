@@ -1,7 +1,7 @@
 \section{Framework Design}\label{design}
 
 \subsection{Architecture and Lifecycle Layers}
-The proposed framework is structured around three lifecycle layers, each with a distinct scope and responsibility. Figure~\ref{fig:framework-layers} show how these layers interface with existing CERN services lie.
+The proposed framework is structured around three lifecycle layers, each with a distinct scope and responsibility. Figure~\ref{fig:framework-layers} show how these layers interface with existing services lie.
 
 \begin{figure}[tbp]
   \centering
@@ -88,13 +88,11 @@ The key design property is a single source of intent stored in VCS, from which p
 
 One of the benefits of using Terraform/OpenTofu is its ability to detect drift by comparing declared intent against the actual state of infrastructure resources. When a plan is executed, the tool reconciles three representations: the declared configuration, the stored state file, and the real-world resource state queried through provider APIs. Any deviation is surfaced explicitly before changes are applied.
 
-Within the proposed framework, this ability is used to correct drift by running scheduled plan operations through CI/CD pipelines. Drift introduced outside the framework, e.g. through manual interventions during incidents, becomes visible at the next pipeline execution, giving operators an explicit and auditable view of inconsistencies.
-
-Detected drift is corrected by re-applying the declared state through the standard workflow.
+Within the proposed framework, this ability is used to correct drift by running scheduled plan operations through CI/CD pipelines. Drift introduced outside the framework, e.g. through manual interventions during incidents, becomes visible at the next pipeline execution, giving operators an explicit and auditable view of inconsistencies. Detected drift is corrected by re-applying the declared state through the standard workflow.
 
 \subsection{Provisioning Workflow}
 
-Provisioning happens via a CI/CD workflow. A Operator commits changes to their infrastructure repository. The CI/CD pipeline executes validation and a plan operation, producing an auditable view of intended changes. If approved, the pipeline applies the changes. Terraform/OpenTofu provisions cloud resources and registers the host with supporting services through custom providers. The instance boots, cloud-init executes the bootstrap logic, and the Puppet agent performs its first catalog request. From this point, configuration convergence is managed by CM and is outside the framework's control. Figure~\ref{fig:provisioning-seq} illustrates this workflow.
+Provisioning happens via a CI/CD workflow. An Operator commits changes to their infrastructure repository. The CI/CD pipeline executes validation and a plan operation, producing an auditable view of intended changes. If approved, the pipeline applies the changes. Terraform/OpenTofu provisions cloud resources and registers the host with supporting services through custom providers. The instance boots, cloud-init executes the bootstrap logic, and the Puppet agent performs its first catalog request. From this point, configuration convergence is managed by CM and is outside the framework's control. Figure~\ref{fig:provisioning-seq} illustrates this workflow.
 
 \begin{figure}[tbp]
   \centering
@@ -125,4 +123,4 @@ Provisioning happens via a CI/CD workflow. A Operator commits changes to their i
   \label{fig:provisioning-seq}
 \end{figure}
 
-The key design goal is that provisioning and CM inputs are derived from a single declarative definition, reducing manual coordination at the provisioning/CM boundary. Updates follow the same plan/apply cycle. The framework does not implement continuous reconciliation; drift is detected through plan output and corrected by re-applying the declared state.
+The key design goal is that provisioning and CM inputs are derived from a single declarative definition, reducing manual coordination at the provisioning/CM boundary. Updates follow the same \texttt{plan/apply} cycle. The framework does not implement continuous reconciliation; drift is detected through plan output and corrected by re-applying the declared state.
