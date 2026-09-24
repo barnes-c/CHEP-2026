@@ -1,6 +1,6 @@
 At CERN, provisioning, configuration, and operational state are each handled by a different system. Since 2012 the IT department has worked to bridge them under the Agile Infrastructure project, combining OpenStack, Puppet, and Foreman with a set of in-house services so that users see one coherent platform.
 
-The result is mature, but the seams between these systems are still where the work goes. Traceability and reproducibility suffer most when a service is deployed for the first time, scaled up, or rebuilt after a failure. Exposing newer cloud features, such as load balancers or security groups, means writing another integration each time.
+The result of this project is mature, but the seams between these systems are still where the work goes. Traceability and reproducibility suffer most when a service is deployed for the first time, scaled up, or rebuilt after a failure. Exposing newer cloud features, such as load balancers or security groups, means writing another integration each time.
 
 Infrastructure-as-Code (IaC) tools such as Terraform and its open-source fork, OpenTofu, offer a declarative and version-controlled model that can sit across these procedures. They also bring an ecosystem of off-the-shelf modules that can be reused rather than rebuilt.
 
