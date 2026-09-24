@@ -1,19 +1,18 @@
 \section{Current Infrastructure Landscape and Challenges}\label{infra}
 
-CERN operates its own cloud infrastructure based on OpenStack~\cite{dupuis2025,savchenko2024preparing}. Beyond OpenStack, several in-house services manage the machines state, trust, and network configuration~\cite{martelli2018}. Foreman serves as the central External Node Classification (ENC) system for Puppet, maintaining hostgroup assignments, environments, and metadata consumed during catalog compilation.
+CERN runs its own cloud on OpenStack~\cite{dupuis2025,savchenko2024preparing}. Around it sit several in-house services that manage machine state, trust, and network configuration~\cite{martelli2018}. Foreman acts as the central External Node Classification (ENC) system for Puppet, holding the hostgroup assignments, environments, and metadata that are consumed when a catalog is compiled.
 
-Production systems are typically provisioned through an internal tool that encapsulates the above mentioned services to create resources. Once these are created a cloud-init script runs to perform the bootstrapping for Puppet which will handle the lifecycle management of a machine. Once the Puppet agent performs its first catalog request the host transitions into ongoing CM.
+Production systems are usually provisioned through an internal tool that wraps those services and creates the resources. A cloud-init script then bootstraps Puppet, which takes over lifecycle management of the machine. Once the Puppet agent makes its first catalog request, the host is in ongoing CM.
 
-eThe pain points within this landscape do not originate from deficiencies within individual tools or services, but from the interfaces between them. State is distributed across Foreman, OpenStack, alert management, state management, and a network database, with parts duplicated or derived independently. When changes propagate through different tools, inconsistencies arise to the point where manual correction is needed. Figure~\ref{fig:state-boundaries} shows the drift boundaries between infrastructure layers in the current infrastructure landscape.
+The pain points here are not in the individual tools. They are in the interfaces between them. State lives in Foreman, in OpenStack, in alert management, in state management, and in a network database, and parts of it are duplicated or derived independently in more than one place. A change that propagates through several of these systems can leave them disagreeing, and someone has to go and fix it by hand. Figure~\ref{fig:state-boundaries} shows where those drift boundaries fall.
 
 \begin{figure}[tbp]
-  \label{fig:state-boundaries}
   \centering
     \scalebox{0.88}{\input{figures/fig_state_boundaries}}
   \caption{Layered view of the current infrastructure stack.}
+  \label{fig:state-boundaries}
 \end{figure}
 
-Key limitations include: overlapping state representations across systems with delayed convergence asynchronous change propagation with weak end-to-end guarantees; manual steps remaining in provisioning for registration, hardware tracking, and exceptional workflows; and limited end-to-end observability with slow feedback loops. The internal tool, which is commonly used to deploy infrastructure, itself follows a fire-and-forget model, performing no pre-flight checks on permissions or quota and failing silently on errors.
+Four limitations stand out. State representations overlap across systems and converge late. Change propagates asynchronously with weak end-to-end guarantees. Manual steps remain in provisioning, for registration, hardware tracking, and the exceptional workflows. And end-to-end observability is limited, so feedback loops are slow. The internal tool that most people use to deploy infrastructure is itself fire-and-forget: it runs no pre-flight checks on permissions or quota, and it fails silently.
 
-The absence of a single declarative model encompassing all the artifacts (virtual resources, service-level configuration, and supporting registrations) limits end-to-end automation and makes convergence dependent on cross-system coordination. These constraints motivate the exploration of a Terraform/OpenTofu-based framework to reduce boundary drift, improve idempotency across layers, and increase traceability of change.
-
+What is absent is a single declarative model covering all of the artifacts involved, the virtual resources, the service-level configuration, and the supporting registrations. Without it, end-to-end automation stops short and convergence depends on coordinating across systems by hand. That is the gap a Terraform/OpenTofu-based framework is meant to close, by reducing boundary drift, making the layers idempotent, and making change traceable.

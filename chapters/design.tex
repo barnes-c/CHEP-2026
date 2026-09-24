@@ -1,30 +1,30 @@
 \section{Framework Design}\label{design}
 
 \subsection{Architecture and Lifecycle Layers}
-The proposed framework is structured around three lifecycle layers, each with a distinct scope and responsibility. Figure~\ref{fig:framework-layers} show how these layers interface with existing services lie.
+The framework is built around three lifecycle layers, each with its own scope. Figure~\ref{fig:framework-layers} shows where they meet the existing services.
 
 \begin{figure}[tbp]
   \centering
     \scalebox{0.95}{\input{figures/fig_framework_layers}}
-  \caption{View of the proposed IaC framework. Encapsulation of configuration, provisioning and registration through a integration Layer.}
+  \caption{View of the proposed IaC framework. Encapsulation of configuration, provisioning and registration through an integration layer.}
   \label{fig:framework-layers}
 \end{figure}
 
-Both the Virtual infrastructure layer (OpenStack resources, metadata, lifecycle) and the Physical infrastructure layer (hardware inventory, network registration, lifecycle records) are managed through Terraform/OpenTofu. Custom providers handle resource provisioning, inventory registration, and certificate management in a unified way, replacing the manual and error-prone steps previously required across these two layers.
+The virtual infrastructure layer (OpenStack resources, metadata, lifecycle) and the physical infrastructure layer (hardware inventory, network registration, lifecycle records) are both managed through Terraform/OpenTofu. Custom providers take care of resource provisioning, inventory registration, and certificate management in one place, which removes the manual and error-prone steps that these two layers used to require.
 
-The CM Layer still has the full responsibility for the runtime configuration through the existing Puppet and Foreman tooling. Rather than replacing or duplicating these systems, the framework treats them as the source of truth for host-level configuration. 
+The CM layer keeps full responsibility for runtime configuration through Puppet and Foreman. The framework does not replace or duplicate them; it treats them as the source of truth for anything at host level.
 
-The key design property is a single source of intent stored in VCS, from which provisioning, classification, and registration are all derived. This directly addresses the multiple stores of state mentioned in Chapter~\ref{infra} and reduces boundary drift across all integration points shown in Figure~\ref{fig:framework-layers}.
+What matters in this design is that intent is declared once and stored in VCS, and that provisioning, classification, and registration are all derived from it. That is what addresses the scattered state described in Section~\ref{infra}, and it removes drift at each of the integration points in Figure~\ref{fig:framework-layers}.
 
 \subsection{State and Drift Model}
 
-One of the benefits of using Terraform/OpenTofu is its ability to detect drift by comparing declared intent against the actual state of infrastructure resources. When a plan is executed, the tool reconciles three representations: the declared configuration, the stored state file, and the real-world resource state queried through provider APIs. Any deviation is surfaced explicitly before changes are applied.
+Terraform/OpenTofu detects drift by comparing what was declared against what actually exists. Running a plan reconciles three things: the declared configuration, the stored state file, and the real resource state queried through the provider APIs. Anything that disagrees is surfaced before a change is applied.
 
-Within the proposed framework, this ability is used to correct drift by running scheduled plan operations through CI/CD pipelines. Drift introduced outside the framework, e.g. through manual interventions during incidents, becomes visible at the next pipeline execution, giving operators an explicit and auditable view of inconsistencies. Detected drift is corrected by re-applying the declared state through the standard workflow.
+We use this by running plan operations on a schedule through CI/CD. Drift introduced outside the framework, typically a manual intervention during an incident, shows up at the next pipeline run, so operators get an explicit and auditable list of what no longer matches. Fixing it means re-applying the declared state through the normal workflow.
 
 \subsection{Provisioning Workflow}
 
-Provisioning happens via a CI/CD workflow. An Operator commits changes to their infrastructure repository. The CI/CD pipeline executes validation and a plan operation, producing an auditable view of intended changes. If approved, the pipeline applies the changes. Terraform/OpenTofu provisions cloud resources and registers the host with supporting services through custom providers. The instance boots, cloud-init executes the bootstrap logic, and the Puppet agent performs its first catalog request. From this point, configuration convergence is managed by CM and is outside the framework's control. Figure~\ref{fig:provisioning-seq} illustrates this workflow.
+Provisioning runs through CI/CD. An operator commits a change to their infrastructure repository. The pipeline validates it and runs a plan, which gives an auditable view of what is about to change. Once approved, the pipeline applies it. Terraform/OpenTofu provisions the cloud resources and registers the host with the supporting services through the custom providers. The instance boots, cloud-init runs the bootstrap logic, and the Puppet agent makes its first catalog request. From there, configuration convergence belongs to CM and the framework is out of the picture. Figure~\ref{fig:provisioning-seq} shows the sequence.
 
 \begin{figure}[tbp]
   \centering
@@ -33,4 +33,4 @@ Provisioning happens via a CI/CD workflow. An Operator commits changes to their 
   \label{fig:provisioning-seq}
 \end{figure}
 
-The key design goal is that provisioning and CM inputs are derived from a single declarative definition, reducing manual coordination at the provisioning/CM boundary. Updates follow the same \texttt{plan/apply} cycle. The framework does not implement continuous reconciliation; drift is detected through plan output and corrected by re-applying the declared state.
+The point of the design is that provisioning and CM inputs come from one declarative definition, which is what removes the manual coordination at the provisioning/CM boundary. Updates go through the same \texttt{plan/apply} cycle. The framework does not reconcile continuously: drift is detected in the plan output and corrected by re-applying.
