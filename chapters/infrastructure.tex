@@ -4,6 +4,8 @@ CERN runs its own cloud on OpenStack~\cite{dupuis2025,savchenko2024preparing}. A
 
 Production systems are usually provisioned through an internal tool that wraps those services and creates the resources. A cloud-init script then bootstraps Puppet, which takes over lifecycle management of the machine. Once the Puppet agent makes its first catalog request, the host is in ongoing CM.
 
+Terraform has already been used at CERN in a narrower scope. The Batch Service adopted it to bootstrap Kubernetes clusters, holding manifests in GitLab and applying them from CI/CD, having run into the same home-grown tooling that stitches OpenStack, Foreman, and Puppet together~\cite{alvarez2020batch}. That work established the pattern for a single service; what is missing is a model that covers provisioning across the estate.
+
 The pain points here are not in the individual tools. They are in the interfaces between them. State lives in Foreman, in OpenStack, in alert management, in state management, and in a network database, and parts of it are duplicated or derived independently in more than one place. A change that propagates through several of these systems can leave them disagreeing, and someone has to go and fix it by hand. Figure~\ref{fig:state-boundaries} shows where those drift boundaries fall.
 
 \begin{figure}[tbp]

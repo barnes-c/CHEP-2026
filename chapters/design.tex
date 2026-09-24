@@ -33,4 +33,4 @@ Provisioning runs through CI/CD. An operator commits a change to their infrastru
   \label{fig:provisioning-seq}
 \end{figure}
 
-The point of the design is that provisioning and CM inputs come from one declarative definition, which is what removes the manual coordination at the provisioning/CM boundary. Updates go through the same \texttt{plan/apply} cycle. The framework does not reconcile continuously: drift is detected in the plan output and corrected by re-applying.
+The point of the design is that provisioning and CM inputs come from one declarative definition, which is what removes the manual coordination at the provisioning/CM boundary. Updates go through the same \texttt{plan/apply} cycle.
