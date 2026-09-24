@@ -31,7 +31,7 @@ It does not contain production infrastructure code or operational tooling used a
 If you reference this work, please cite it as:
 
 ```tex
-C. Barnes, D. Juárez, L. Fernandez Alvarez, G. Tenagali.
+C. Barnes, D. Juárez, L. Fernández Álvarez, G. Tenaglia.
 An IaC-Framework for the future of CERN's Infrastructure and Configuration Management.
 In: Proc. 28th Int. Conf. on Computing in High Energy and Nuclear Physics (CHEP 2026),
 EPJ Web Conf. (2026).
@@ -41,7 +41,7 @@ Or as BibTeX:
 
 ```tex
 @inproceedings{barnes2026iac,
-  author       = {Barnes, Christopher and Ju{\'a}rez, Daniel and Fernandez Alvarez, Luis and Tenagali, Giacomo},
+  author       = {Barnes, Christopher and Ju{\'a}rez, Daniel and Fern{\'a}ndez {\'A}lvarez, Luis and Tenaglia, Giacomo},
   title        = {An IaC-Framework for the future of CERN's Infrastructure and Configuration Management},
   booktitle    = {Proc. 28th Int. Conf. on Computing in High Energy and Nuclear Physics (CHEP 2026)},
   journal      = {EPJ Web of Conferences},
