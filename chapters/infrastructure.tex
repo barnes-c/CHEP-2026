@@ -1,12 +1,12 @@
 \section{Current Infrastructure Landscape and Challenges}\label{infra}
 
-CERN runs its own cloud on OpenStack~\cite{dupuis2025,savchenko2024preparing}. Around it sit several in-house services that manage machine state, trust, and network configuration~\cite{martelli2018}. Foreman acts as the central External Node Classification (ENC) system for Puppet, holding the hostgroup assignments, environments, and metadata that are consumed when a catalog is compiled.
+CERN has its own cloud based on OpenStack~\cite{dupuis2025,savchenko2024preparing}. In this cloud several in-house services are running which manage the state of servers, their trust (secrets/certificates), and network configuration~\cite{martelli2018}. Foreman is used to assign the servers hostgroups and environments. Puppet then uses these to apply specific configurations for each of them.
 
-Production systems are usually provisioned through an internal tool that wraps those services and creates the resources. A cloud-init script then bootstraps Puppet, which takes over lifecycle management of the machine. Once the Puppet agent makes its first catalog request, the host is in ongoing CM.
+Currently servers are mostly provisioned through the OpenStack web interface or through an internal tool that wraps those services needed into a Command-Line Interface (CLI) for creating servers. It injects a cloud-init script when a server boots, configuring Puppet, which then takes over lifecycle management of the server. From this point on the host is part of the central CM.
 
-Terraform has already been used at CERN in a narrower scope. The Batch Service adopted it to bootstrap Kubernetes clusters, holding manifests in GitLab and applying them from CI/CD, having run into the same home-grown tooling that stitches OpenStack, Foreman, and Puppet together~\cite{alvarez2020batch}. That work established the pattern for a single service; what is missing is a model that covers provisioning across the estate.
+This is not the first time Terraform is used in the IT department at CERN. The Batch Service uses it for bootstrapping Kubernetes clusters, storing manifests in GitLab and applying them from CI/CD, having run into the same home-grown tooling that stitches OpenStack, Foreman, and Puppet together~\cite{alvarez2020batch}. We can use this pattern but instead of applying it to a single service to a more general audience.
 
-The pain points here are not in the individual tools. They are in the interfaces between them. State lives in Foreman, in OpenStack, in alert management, in state management, and in a network database, and parts of it are duplicated or derived independently in more than one place. A change that propagates through several of these systems can leave them disagreeing, and someone has to go and fix it by hand. Figure~\ref{fig:state-boundaries} shows where those drift boundaries fall.
+One of the first problems we need to solve is how the different tools interact between each other. State lives in Foreman, in OpenStack, in alert management, in state management, and in a network database, and parts of it are duplicated or derived independently in more than one place. A change that propagates through several of these systems can leave them disagreeing, and someone has to go and fix it by hand. Figure~\ref{fig:state-boundaries} shows where those drift boundaries fall.
 
 \begin{figure}[tbp]
   \centering
@@ -15,6 +15,7 @@ The pain points here are not in the individual tools. They are in the interfaces
   \label{fig:state-boundaries}
 \end{figure}
 
-Four limitations stand out. State representations overlap across systems and converge late. Change propagates asynchronously with weak end-to-end guarantees. Manual steps remain in provisioning, for registration, hardware tracking, and the exceptional workflows. And end-to-end observability is limited, so feedback loops are slow. The internal tool that most people use to deploy infrastructure is itself fire-and-forget: it runs no pre-flight checks on permissions or quota, and it fails silently.
+Four limitations stand out. State representations overlap across systems and converge late. Change propagates asynchronously with weak end-to-end guarantees. And end-to-end observability is limited, so feedback loops are slow. The CLI that most people use to deploy infrastructure is itself fire-and-forget. It runs no pre-flight checks on permissions or quota, and it fails silently.
 
-What is absent is a single declarative model covering all of the artifacts involved, the virtual resources, the service-level configuration, and the supporting registrations. Without it, end-to-end automation stops short and convergence depends on coordinating across systems by hand. That is the gap a Terraform/OpenTofu-based framework is meant to close, by reducing boundary drift, making the layers idempotent, and making change traceable.
+What is missing is a single approach covering all of the artifacts involved. Without this approach an end-to-end automation stops short and convergence depends on coordinating across systems by hand. That is the gap a Terraform/OpenTofu-based framework is meant to close, by reducing boundary drift, making the layers idempotent, and making change traceable.
+

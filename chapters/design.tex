@@ -14,17 +14,21 @@ The virtual infrastructure layer (OpenStack resources, metadata, lifecycle) and 
 
 The CM layer keeps full responsibility for runtime configuration through Puppet and Foreman. The framework does not replace or duplicate them; it treats them as the source of truth for anything at host level.
 
-What matters in this design is that intent is declared once and stored in VCS, and that provisioning, classification, and registration are all derived from it. That is what addresses the scattered state described in Section~\ref{infra}, and it removes drift at each of the integration points in Figure~\ref{fig:framework-layers}.
+What matters in this design is that intent is declared once and stored in a version-control system (VCS), and that provisioning, classification, and registration are all derived from it. That is what addresses the scattered state described in Section~\ref{infra}, and it removes drift at each of the integration points in Figure~\ref{fig:framework-layers}.
 
 \subsection{State and Drift Model}
 
-Terraform/OpenTofu detects drift by comparing what was declared against what actually exists. Running a plan reconciles three things: the declared configuration, the stored state file, and the real resource state queried through the provider APIs. Anything that disagrees is surfaced before a change is applied.
+Terraform/OpenTofu detects drift by comparing what was written against what actually exists. Running a plan checks three things: the written configuration, the stored state file, and the real resource state queried through the provider APIs. Anything that disagrees is surfaced before a change is applied.
 
-We use this by running plan operations on a schedule through CI/CD. Drift introduced outside the framework, typically a manual intervention during an incident, shows up at the next pipeline run, so operators get an explicit and auditable list of what no longer matches. Fixing it means re-applying the declared state through the normal workflow.
+We use this feature in a scheduled pipeline to detect drift. Drift introduced outside the framework shows up at the next pipeline run, so operators get an explicit and auditable list of what no longer matches. Fixing it means re-applying the declared state through the normal workflow.
 
 \subsection{Provisioning Workflow}
 
-Provisioning runs through CI/CD. An operator commits a change to their infrastructure repository. The pipeline validates it and runs a plan, which gives an auditable view of what is about to change. Once approved, the pipeline applies it. Terraform/OpenTofu provisions the cloud resources and registers the host with the supporting services through the custom providers. The instance boots, cloud-init runs the bootstrap logic, and the Puppet agent makes its first catalog request. From there, configuration convergence belongs to CM and the framework is out of the picture. Figure~\ref{fig:provisioning-seq} shows the sequence.
+Provisioning also makes use of the CI/CD. 
+Once an operator commits a change to their infrastructure repository a pipeline validates it and runs a plan, which gives an auditable view of what is about to change.
+Once approved, the pipeline applies it.
+Terraform/OpenTofu provisions the resources and registers the host with the supporting services through the custom providers.
+The instance boots, cloud-init runs the bootstrap logic, and the Puppet takes over. Figure~\ref{fig:provisioning-seq} shows the sequence.
 
 \begin{figure}[tbp]
   \centering

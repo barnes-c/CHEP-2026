@@ -21,10 +21,10 @@ The implementation keeps the interface that end users see as small as possible, 
 \end{listing}
 
 \subsection{Module Structure}
-The provisioning layer is organised around a root module that composes the submodules from the declared inputs. The central abstraction is a \textit{node}, handled by an instances submodule that treats compute attributes, networking, identity material, classification metadata, and lifecycle registration as one logical unit. Persistent storage is deliberately kept out of that unit, in a separate volumes submodule, so that it can be managed on its own lifecycle.
+The provisioning layer is organized around a root module that composes the submodules from the declared inputs. The central abstraction is a \textit{node}, handled by an instances submodule that treats compute attributes, networking, identity material, classification metadata, and lifecycle registration as one logical unit. Persistent storage is deliberately kept out of that unit, in a separate volumes submodule, so that it can be managed on its own lifecycle.
 
 \subsection{Custom Providers}
-Where no provider existed, we wrote one. These custom Terraform/OpenTofu providers wrap the in-house services and expose their APIs as declarative resources, so service registrations and metadata updates go through the same plan/apply workflow as everything else.
+Where no provider existed, we wrote one. Custom Terraform/OpenTofu providers wrap the in-house services and expose their APIs as resources. This way service registrations and metadata updates go through the same plan/apply workflow as everything else.
 
 \subsection{CI/CD Integration}
-Infrastructure changes run through standardised CI/CD pipelines and nowhere else, which is what makes validation consistent and execution auditable. The pipeline logic is packaged as a reusable catalog component that a project pulls in with a single \texttt{include}. Every merge request triggers validation, linting, and a plan, and the plan is attached to the request as a human-readable artifact for review. Apply only runs once validation has passed and the required approvals are in, so there is no ad-hoc path to production.
+Infrastructure changes run only through standardized CI/CD pipelines to make validation consistent and execution auditable. The pipelines are packaged as a catalog component that a project can use with a single \texttt{include}. Every merge request triggers validation, linting, and a plan, and the plan is attached to the request as a human-readable document for review. Apply only runs once validation has passed and the required approvals are in.

@@ -1,13 +1,18 @@
 \section{Evaluation and Results}\label{evaluation}
 
 \subsection{Methodology}
-We combined scenario-based testing with qualitative feedback from practitioners. A representative deployment scenario was run end-to-end to see how provisioning behaved, how it integrated with the existing services, and how it fitted the operational workflows. Alongside that, we collected feedback from people who deployed real services with the framework. The aim was to check correctness, consistency, and whether the thing is usable inside CERN's constraints, not to produce performance benchmarks.
+The methodology used is scenario-based testing with qualitative feedback from practitioners. A representative deployment scenario was run end-to-end to see how provisioning behaved, how it integrated with the existing services, and how it fitted the operational workflows. Alongside that, we collected feedback from people who deployed real services with the framework. The aim was to check correctness, consistency, and whether the framework is usable inside CERN's constraints.
 
 \subsection{Results}
-Applying the infrastructure definitions created, registered, and bootstrapped the target host with no manual intervention beyond writing the declaration. Re-applying the same declarations changed nothing, which confirms that the provisioning and registration layers are idempotent.
+Applying the infrastructure definitions created, registered, and bootstrapped the target host with no manual intervention beyond writing the declaration and then re-applying the same declarations changed nothing.
+This confirms that the provisioning and registration layers are idempotent.
 
-To test drift handling, we made changes by hand outside the framework. The next plan surfaced every deviation from the declared intent, giving an explicit and auditable list of what had diverged. Re-applying through the standard CI/CD workflow put it back. For controlled drift correction, the \texttt{plan/apply} cycle turned out to be enough on its own; continuous reconciliation was not needed.
+To test drift handling, we made changes by hand outside the framework. 
+The next plan surfaced every deviation from the declared intent, giving an explicit and auditable list of what had diverged. 
+Re-applying through the standard CI/CD workflow put the artifacts back in place. 
+For controlled drift correction, the \texttt{plan/apply} cycle turned out to be enough on its own; continuous reconciliation was not needed.
 
-Against the existing provisioning approach, the framework cut the number of manual coordination steps and closed off the ad-hoc execution paths. Reviewers also got something they did not have before: a plan artifact on the merge request showing exactly what was about to change, which meant less out-of-band checking before approving.
+The framework cut the number of manual coordination steps and closed off the ad-hoc intervention paths in comparison to existing infrastructure.
+Another benefit that our framework provides is a plan artifact which shows exactly what was about to change.
 
-The operators we spoke to picked out the same thing, that they were leaning less on implicit coordination and on knowledge that was never written down, especially when infrastructure had to be recreated or migrated. Reproducing an environment at another site was reported as markedly easier, which is the BC/DR limitation identified in Section~\ref{infra}.
+The operators we spoke to pointed to the same problem. They were leaning less on implicit coordination and on knowledge that was never written down, especially when infrastructure had to be recreated or migrated. Reproducing an environment at another site was reported as markedly easier, which is the BC/DR limitation identified in Section~\ref{infra}.

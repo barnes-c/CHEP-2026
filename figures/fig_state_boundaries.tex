@@ -11,7 +11,7 @@
 
   \node[box] (svc) {Service / Application layer\\(\footnotesize team-specific procedures, overrides)};
   \node[box, below=of svc] (cm) {Configuration management layer\\(\footnotesize Puppet + Foreman)};
-  \node[box, below=of cm] (cloud) {Virtual infrastructure layer\\(\footnotesize OpenStack resources, metadata, lifecycle)};
+  \node[box, below=of cm] (cloud) {Virtual nfrastructure layer\\(\footnotesize OpenStack resources, metadata, lifecycle)};
   \node[box, below=of cloud] (phys) {Physical infrastructure layer\\(\footnotesize hardware inventory, network registration, lifecycle records)};
 
   \coordinate (b1) at ($(svc.south)!0.5!(cm.north)$);
